@@ -35,17 +35,17 @@ function getShot(webImageInst, done) {
         clip: {
           x: 0,
           y: 0,
-          width: 640,
-          height: 640
+          width: 1280,
+          height: 720
         }
       },
       viewportOpts: {
-        width: 640,
-        height: 640,
+        width: 1280,
+        height: 720,
         deviceScaleFactor: 1
       },
       supersampleOpts: {
-        desiredBufferType: 'jpeg',
+        desiredBufferType: 'png',
         resizeMode: 'bezier'
       }
     },
@@ -68,7 +68,7 @@ function postTweet(buffer, done) {
       config.shot.alt +
       '-' +
       new Date().toISOString().replace(/:/g, '-') +
-      '.jpg';
+      '.png';
 
     console.log('Writing out', filePath);
     fs.writeFileSync(filePath, buffer);

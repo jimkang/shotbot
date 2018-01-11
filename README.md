@@ -1,7 +1,7 @@
 shotbot
 =============
 
-Multi-tenant app for bots that post screenshots of web pages
+Multi-tenant app for bots that post screenshots of web pages.
 
 Installation
 ------------
