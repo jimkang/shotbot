@@ -20,7 +20,7 @@ module.exports = {
     }
   },
   archive: {
-    name: 'Quiet Hills',
+    name: 'Hills',
     idPrefix: 'hill',
     footerHTML: `<footer>Want more hills? <a href="http://jimkang.com/hills">Go get you some.</a>
   <script type="text/javascript">
