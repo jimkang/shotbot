@@ -5,52 +5,42 @@ var waterfall = require('async-waterfall');
 var Twit = require('twit');
 var Webimage = require('webimage');
 var fs = require('fs');
+var callNextTick = require('call-next-tick');
+var StaticWebArchiveOnGit = require('static-web-archive-on-git');
+var randomId = require('idmaker').randomId;
+var queue = require('d3-queue').queue;
 
-var configPath;
-
-if (process.env.CONFIG) {
-  configPath = './' + process.env.CONFIG;
+if (process.env.BOT) {
+  var configPath = './configs/' + process.env.BOT + '-config';
+  var behaviorPath = './behaviors/' + process.env.BOT + '-behavior';
 } else {
-  configPath = './config';
+  console.log('Usage: BOT=botname node post-shot.js [--dry]');
+  process.exit();
 }
 
 var config = require(configPath);
+var behavior = require(behaviorPath);
 
 var dryRun = false;
 if (process.argv.length > 2) {
   dryRun = process.argv[2].toLowerCase() == '--dry';
 }
 
+var staticWebStream = StaticWebArchiveOnGit({
+  config: config.github,
+  title: behavior.archive.name,
+  footerHTML: behavior.footerHTML,
+  maxEntriesPerPage: behavior.maxEntriesPerPage
+});
+
 var webimage;
 var twit = new Twit(config.twitter);
 
-waterfall([Webimage, getShot, shutDownWebimage, postTweet], wrapUp);
+waterfall([Webimage, getShot, shutDownWebimage, postToTargets], wrapUp);
 
 function getShot(webImageInst, done) {
   webimage = webImageInst;
-  webimage.getImage(
-    {
-      url: config.shot.url,
-      screenshotOpts: {
-        clip: {
-          x: 0,
-          y: 0,
-          width: 1280,
-          height: 720
-        }
-      },
-      viewportOpts: {
-        width: 1280,
-        height: 720,
-        deviceScaleFactor: 1
-      },
-      supersampleOpts: {
-        desiredBufferType: 'png',
-        resizeMode: 'bezier'
-      }
-    },
-    done
-  );
+  webimage.getImage(behavior.webimageOpts, done);
 }
 
 function shutDownWebimage(buffer, done) {
@@ -61,20 +51,45 @@ function shutDownWebimage(buffer, done) {
   }
 }
 
-function postTweet(buffer, done) {
+function postToTargets(buffer, done) {
+  var altText = behavior.getAltText();
+  var caption = behavior.getCaption();
+
   if (dryRun) {
     let filePath =
       'scratch/' +
-      config.shot.alt +
+      altText +
       '-' +
       new Date().toISOString().replace(/:/g, '-') +
       '.png';
 
     console.log('Writing out', filePath);
     fs.writeFileSync(filePath, buffer);
-    process.exit();
+    callNextTick(done);
   } else {
+    var q = queue();
+    q.defer(postToArchive, buffer, altText, caption);
+    q.defer(postTweet, buffer, altText, caption);
+    q.await(done);
   }
+}
+
+function postToArchive(buffer, altText, caption, done) {
+  var id = behavior.archive.idPrefix + '-' + randomId(8);
+  staticWebStream.write({
+    id,
+    date: new Date().toISOString(),
+    mediaFilename: id + '.png',
+    altText,
+    caption,
+    buffer
+  });
+  staticWebStream.end(done);
+}
+
+function postTweet(buffer, altText, caption, done) {
+  // TODO.
+  callNextTick(done);
 }
 
 function wrapUp(error, data) {
@@ -85,6 +100,6 @@ function wrapUp(error, data) {
       console.log('data:', data);
     }
   } else if (!dryRun) {
-    console.log('Tweeted:', data.text);
+    console.log('Posted to targets!');
   }
 }

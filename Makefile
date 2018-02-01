@@ -13,10 +13,10 @@ sync:
 	$(SSHCMD) "cd $(APPDIR) && npm install"
 
 run-hills:
-	CONFIG="configs/hills-config" node post-shot.js
+	BOT=hills node post-shot.js
 
 run-hills-dry:
-	CONFIG="configs/hills-config" node post-shot.js --dry
+	BOT=hills node post-shot.js --dry
 
 prettier:
 	prettier --single-quote --write "**/*.js"

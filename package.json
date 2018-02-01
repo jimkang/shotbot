@@ -21,7 +21,8 @@
   "dependencies": {
     "async-waterfall": "^0.1.5",
     "post-image-to-twitter": "^1.0.0",
+    "static-web-archive-on-git": "^2.0.1",
     "twit": "^2.2.9",
-    "webimage": "^1.1.1"
+    "webimage": "^1.2.6"
   }
 }
