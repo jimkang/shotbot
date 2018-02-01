@@ -9,6 +9,7 @@ var callNextTick = require('call-next-tick');
 var StaticWebArchiveOnGit = require('static-web-archive-on-git');
 var randomId = require('idmaker').randomId;
 var queue = require('d3-queue').queue;
+var postImage = require('post-image-to-twitter');
 
 if (process.env.BOT) {
   var configPath = './configs/' + process.env.BOT + '-config';
@@ -29,7 +30,7 @@ if (process.argv.length > 2) {
 var staticWebStream = StaticWebArchiveOnGit({
   config: config.github,
   title: behavior.archive.name,
-  footerHTML: behavior.footerHTML,
+  footerHTML: behavior.archive.footerHTML,
   maxEntriesPerPage: behavior.maxEntriesPerPage
 });
 
@@ -88,11 +89,17 @@ function postToArchive(buffer, altText, caption, done) {
 }
 
 function postTweet(buffer, altText, caption, done) {
-  // TODO.
-  callNextTick(done);
+  var postImageOpts = {
+    twit,
+    base64Image: buffer.toString('base64'),
+    altText,
+    caption: ''
+  };
+
+  postImage(postImageOpts, done);
 }
 
-function wrapUp(error, data) {
+function wrapUp(error, placeholder, data) {
   if (error) {
     console.log(error, error.stack);
 
