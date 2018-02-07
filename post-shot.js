@@ -11,6 +11,9 @@ var randomId = require('idmaker').randomId;
 var queue = require('d3-queue').queue;
 var postImage = require('post-image-to-twitter');
 
+var shotRetries = 0;
+var shotRetryLimit = 5;
+
 if (process.env.BOT) {
   var configPath = './configs/' + process.env.BOT + '-config';
   var behaviorPath = './behaviors/' + process.env.BOT + '-behavior';
@@ -37,7 +40,15 @@ var staticWebStream = StaticWebArchiveOnGit({
 var webimage;
 var twit = new Twit(config.twitter);
 
-waterfall([Webimage, getShot, shutDownWebimage, postToTargets], wrapUp);
+kickOff();
+
+function kickOff() {
+  try {
+    waterfall([Webimage, getShot, shutDownWebimage, postToTargets], wrapUp);
+  } catch (e) {
+    retry();
+  }
+}
 
 function getShot(webImageInst, done) {
   webimage = webImageInst;
@@ -106,7 +117,19 @@ function wrapUp(error, placeholder, data) {
     if (data) {
       console.log('data:', data);
     }
+    retry(error);
   } else if (!dryRun) {
     console.log('Posted to targets!');
+  }
+}
+
+function retry(e) {
+  console.log('Error while trying to get shot:', e);
+  if (shotRetries < shotRetryLimit) {
+    shotRetries += 1;
+    console.log('Retrying. Number of retries so far:', shotRetries);
+    callNextTick(kickOff);
+  } else {
+    console.log('Reached retry limit. Giving up.');
   }
 }
