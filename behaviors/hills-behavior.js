@@ -1,4 +1,5 @@
 module.exports = {
+  postingTargets: ['archive', 'twitter'],
   webimageOpts: {
     url: 'http://jimkang.com/hills',
     screenshotOpts: {

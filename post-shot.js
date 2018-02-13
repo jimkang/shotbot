@@ -31,7 +31,7 @@ if (process.argv.length > 2) {
 }
 
 var staticWebStream;
-if (config.postingTargets.indexOf('archive') !== -1) {
+if (behavior.postingTargets.indexOf('archive') !== -1) {
   staticWebStream = StaticWebArchiveOnGit({
     config: config.github,
     title: behavior.archive.name,
@@ -44,7 +44,7 @@ var webimage;
 
 var twit;
 
-if (config.postingTargets.indexOf('twitter') !== -1) {
+if (behavior.postingTargets.indexOf('twitter') !== -1) {
   twit = new Twit(config.twitter);
 }
 
@@ -88,10 +88,10 @@ function postToTargets(buffer, done) {
     callNextTick(done);
   } else {
     var q = queue();
-    if (config.postingTargets.indexOf('archive') !== -1) {
+    if (behavior.postingTargets.indexOf('archive') !== -1) {
       q.defer(postToArchive, buffer, altText, caption);
     }
-    if (config.postingTargets.indexOf('twitter') !== -1) {
+    if (behavior.postingTargets.indexOf('twitter') !== -1) {
       q.defer(postTweet, buffer, altText, caption);
     }
     q.await(done);
