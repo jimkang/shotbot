@@ -1,6 +1,6 @@
+include config.mk
+
 HOMEDIR = $(shell pwd)
-USER = bot
-SERVER = smallcatlabs
 SSHCMD = ssh $(USER)@$(SERVER)
 PROJECTNAME = shotbot
 APPDIR = /opt/$(PROJECTNAME)

@@ -3,3 +3,4 @@ node_modules
 configs/*.js
 scratch/*.jpg
 scratch/*.png
+config.mk

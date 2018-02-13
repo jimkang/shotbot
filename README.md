@@ -3,10 +3,66 @@ shotbot
 
 Multi-tenant app for bots that post screenshots of web pages.
 
+Tested with Node 8. Will probably work fine with Node 6 or higher.
+
 Installation
 ------------
 
 Clone this repo.
+
+If you are running it on OS X, I've found that you can run it by doing an `npm install` and then `BOT=il-gov node post-shot.js` or `make run-il-gov`.
+
+In order to run it on Ubuntu 16, I needed to do the following first:
+
+- Copy the Makefile in this project (or the entire project) to it.
+- Run `make install-chromium-deps` on there.
+- Alternately you can run the contents of that Make target there:
+
+    apt-get install gconf-service \
+    libasound2 \
+    libatk1.0-0 \
+    libc6 \
+    libcairo2 \
+    libcups2 \
+    libdbus-1-3 \
+    libexpat1 \
+    libfontconfig1 \
+    libgcc1 \
+    libgconf-2-4 \
+    libgdk-pixbuf2.0-0 \
+    libglib2.0-0 \
+    libgtk-3-0 \
+    libnspr4 \
+    libpango-1.0-0 \
+    libpangocairo-1.0-0 \
+    libstdc++6 \
+    libx11-6 \
+    libx11-xcb1 \
+    libxcb1 \
+    libxcomposite1 \
+    libxcursor1 \
+    libxdamage1 \
+    libxext6 \
+    libxfixes3 \
+    libxi6 \
+    libxrandr2 \
+    libxrender1 \
+    libxss1 \
+    libxtst6 \
+    ca-certificates \
+    fonts-liberation \
+    libappindicator1 \
+    libnss3 \
+    lsb-release \
+    xdg-utils \
+    wget
+
+Then, you need to create a `config.mk` with the following in it:
+
+    USER = <user that you want to run as on your server>
+    SERVER = <server hostname or IP>
+
+You need real values for these if you want to use the `sync` and `pushall` targets in the Makefile to deploy this to a remote server. If you don't care, then they can have empty values.
 
 To add a bot, create a `<bot name>-config.js` file that contains GitHub info (for posting to a [static web archive](http://jimkang.com/weblog/articles/platform-free-bots/)) and [Twitter API keys](https://gist.github.com/jimkang/34d16247b40097d8cace) and properties it should use under `/configs`. Example:
 
