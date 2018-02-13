@@ -72,6 +72,8 @@ Next, create a `<bot name>-behavior.js` under `/behaviors`. Example:
 
 `postingTargets` should be all of the targets that you want your posts to go to. Currently supported options: 'archive' and 'twitter'.
 
+It's important to implement `getAltText` and `getCaption`. You need `getAltText` so that your images will have...alt text. `getCaptions can just return an empty string if you don't want a caption.
+
 Usage
 -----
 
