@@ -11,6 +11,7 @@ Clone this repo.
 To add a bot, create a `<bot name>-config.js` file that contains GitHub info (for posting to a [static web archive](http://jimkang.com/weblog/articles/platform-free-bots/)) and [Twitter API keys](https://gist.github.com/jimkang/34d16247b40097d8cace) and properties it should use under `/configs`. Example:
 
     module.exports = {
+      postingTargets: ['archive', 'twitter'],
       github: {
         gitRepoOwner: 'jimkang',
         gitToken: '<Your GitHub token>',
@@ -23,6 +24,8 @@ To add a bot, create a `<bot name>-config.js` file that contains GitHub info (fo
         access_token_secret: 'opoijkljsadfbzxcnvkmokwertlknfgmoskdfgossodrh'
       }
     };
+
+`postingTargets` should be all of the targets that you want your posts to go to. Currently supported options: 'archive' and 'twitter'.
 
 Next, create a `<bot name>-behavior.js` under `/behaviors`. Example:
 

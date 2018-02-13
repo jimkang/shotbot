@@ -30,15 +30,23 @@ if (process.argv.length > 2) {
   dryRun = process.argv[2].toLowerCase() == '--dry';
 }
 
-var staticWebStream = StaticWebArchiveOnGit({
-  config: config.github,
-  title: behavior.archive.name,
-  footerHTML: behavior.archive.footerHTML,
-  maxEntriesPerPage: behavior.maxEntriesPerPage
-});
+var staticWebStream;
+if (config.postingTargets.indexOf('archive') !== -1) {
+  staticWebStream = StaticWebArchiveOnGit({
+    config: config.github,
+    title: behavior.archive.name,
+    footerHTML: behavior.archive.footerHTML,
+    maxEntriesPerPage: behavior.maxEntriesPerPage
+  });
+}
 
 var webimage;
-var twit = new Twit(config.twitter);
+
+var twit;
+
+if (config.postingTargets.indexOf('twitter') !== -1) {
+  twit = new Twit(config.twitter);
+}
 
 kickOff();
 
@@ -80,8 +88,12 @@ function postToTargets(buffer, done) {
     callNextTick(done);
   } else {
     var q = queue();
-    q.defer(postToArchive, buffer, altText, caption);
-    q.defer(postTweet, buffer, altText, caption);
+    if (config.postingTargets.indexOf('archive') !== -1) {
+      q.defer(postToArchive, buffer, altText, caption);
+    }
+    if (config.postingTargets.indexOf('twitter') !== -1) {
+      q.defer(postTweet, buffer, altText, caption);
+    }
     q.await(done);
   }
 }
